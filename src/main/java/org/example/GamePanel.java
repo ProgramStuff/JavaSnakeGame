@@ -32,8 +32,17 @@ public class GamePanel extends JPanel implements ActionListener{
     boolean running = false;
     Timer timer;
     Random random;
+    // Food types
+    Apple apple = new Apple(Color.YELLOW);
+    PoisonFood poison = new PoisonFood(new Color(87, 9, 176));
 
-    Food food = new Food();
+    // Obstacle
+
+    Obstacle wall = new Obstacle(Color.GRAY);
+
+    // Player
+    Player p1 = new Player();
+
 
 
     GamePanel(){
@@ -41,12 +50,14 @@ public class GamePanel extends JPanel implements ActionListener{
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         this.setBackground(Color.black);
         this.setFocusable(true);
-        this.addKeyListener(new MyKeyAdapter());
+        this.addKeyListener(p1.playerKeys);
         startGame();
     }
 
     public void startGame(){
-        food.newApple();
+        apple.newFood();
+        poison.newFood();
+        wall.newObstacle();
         running = true;
         timer = new Timer(DELAY, this);
         timer.start();
@@ -66,21 +77,30 @@ public class GamePanel extends JPanel implements ActionListener{
                 g.drawLine(0, i * UNIT_SIZE, SCREEN_WIDTH, i * UNIT_SIZE);
             }
 
-            g.setColor(Color.YELLOW);
-            g.fillOval(food.getAppleX(), food.getAppleY(), UNIT_SIZE, UNIT_SIZE);
+            // Create Apple
+            g.setColor(apple.getColor());
+            g.fillOval(apple.getFoodX(), apple.getFoodY(), UNIT_SIZE, UNIT_SIZE);
 
-            for (int i = 0; i < bodyParts; i++) {
+            // Create poison food
+            g.setColor(poison.getColor());
+            g.fillRoundRect(poison.getFoodX(), poison.getFoodY(), UNIT_SIZE, UNIT_SIZE, 10, 10);
+
+            // Create Obstacle
+            g.setColor(wall.getColor());
+            g.fillRect(wall.getObstacleX(), wall.getObstacleY(), UNIT_SIZE, UNIT_SIZE);
+
+            for (int i = 0; i < p1.bodyParts; i++) {
                 if (i == 0) {
                     g.setColor(Color.GRAY);
-                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+                    g.fillRect(p1.x[i], p1.y[i], UNIT_SIZE, UNIT_SIZE);
                 } else {
                     g.setColor(new Color(45, 180, 0));
-                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+                    g.fillRect(p1.x[i], p1.y[i], UNIT_SIZE, UNIT_SIZE);
                 }
                 g.setColor(Color.RED);
                 g.setFont(new Font("Ink Free", Font.BOLD, 40));
                 FontMetrics metrics = getFontMetrics(g.getFont());
-                g.drawString("Score: " + appleEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " + appleEaten))/2, g.getFont().getSize());
+                g.drawString("Score: " + p1.appleEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " + p1.appleEaten))/2, g.getFont().getSize());
             }
         }else{
             gameOver(g);
@@ -88,75 +108,82 @@ public class GamePanel extends JPanel implements ActionListener{
 
     }
 
-//    public void newApple(){
-//        appleX = random.nextInt((int)(SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
-//        appleY = random.nextInt((int)(SCREEN_HEIGHT / UNIT_SIZE)) * UNIT_SIZE;
+
+//    public void move(){
+//        for(int i = bodyParts; i > 0; i--){
+//            x[i] = x[i-1];
+//            y[i] = y[i-1];
+//        }
 //
+//        switch (direction){
+//            case 'U':
+//                y[0] = y[0] - UNIT_SIZE;
+//                break;
+//            case 'D':
+//                y[0] = y[0] + UNIT_SIZE;
+//                break;
+//            case 'L':
+//                x[0] = x[0] - UNIT_SIZE;
+//                break;
+//            case 'R':
+//                x[0] = x[0] + UNIT_SIZE;
+//                break;
+//        }
+//    }
+//
+//    public void checkApple(){
+//        if((x[0] == apple.getFoodX()) && (y[0] == apple.getFoodY())){
+//            bodyParts++;
+//            appleEaten++;
+//            apple.newFood();
+//        }
+//    }
+//
+//    public void checkPoison(){
+//        if((x[0] == poison.getFoodX()) && (y[0] == poison.getFoodY())){
+//            running = false;
+//        }
+//    }
+//
+//    public void checkObstacle(){
+//        if((x[0] == wall.getObstacleX()) && (y[0] == wall.getObstacleY())){
+//            running = false;
+//        }
 //    }
 
-    public void move(){
-        for(int i = bodyParts; i > 0; i--){
-            x[i] = x[i-1];
-            y[i] = y[i-1];
-        }
-
-        switch (direction){
-            case 'U':
-                y[0] = y[0] - UNIT_SIZE;
-                break;
-            case 'D':
-                y[0] = y[0] + UNIT_SIZE;
-                break;
-            case 'L':
-                x[0] = x[0] - UNIT_SIZE;
-                break;
-            case 'R':
-                x[0] = x[0] + UNIT_SIZE;
-                break;
-        }
-    }
-
-    public void checkApple(){
-        if((x[0] == food.getAppleX()) && (y[0] == food.getAppleY())){
-            bodyParts++;
-            appleEaten++;
-            food.newApple();
-        }
-    }
-
-    public void checkCollisions(){
-        // Check body collision
-        for (int i = bodyParts; i > 0; i--){
-            if((x[0] == x[i]) && (y[0] == y[i])){
-                running = false;
-            }
-        }
-        //Check left wall
-        if(x[0] < 0){
-            running = false;
-        }
-        //Check right wall
-        if(x[0] > SCREEN_WIDTH){
-            running = false;
-        }
-        //Check top wall
-        if(y[0] < 0){
-            running = false;
-        }
-        //Check bottom wall
-        if(y[0] > SCREEN_HEIGHT){
-            running = false;
-        }
-        if(!running){
-            timer.stop();
-        }
-    }
+//    public void checkCollisions(){
+//        // Check body collision
+//        for (int i = bodyParts; i > 0; i--){
+//            if((x[0] == x[i]) && (y[0] == y[i])){
+//                running = false;
+//            }
+//        }
+//        //Check left wall
+//        if(x[0] < 0){
+//            running = false;
+//        }
+//        //Check right wall
+//        if(x[0] > SCREEN_WIDTH){
+//            running = false;
+//        }
+//        //Check top wall
+//        if(y[0] < 0){
+//            running = false;
+//        }
+//        //Check bottom wall
+//        if(y[0] > SCREEN_HEIGHT){
+//            running = false;
+//        }
+//        if(!running){
+//            timer.stop();
+//        }
+//    }
 
     public void gameOver(Graphics g){
         g.setColor(Color.RED);
         g.setFont(new Font("Ink Free", Font.BOLD, 40));
         FontMetrics metrics1 = getFontMetrics(g.getFont());
-        g.drawString("Score: " + appleEaten, (SCREEN_WIDTH - metrics1.stringWidth("Score: " + appleEaten))/2, g.getFont().getSize());
+        g.drawString("Score: " + p1.appleEaten, (SCREEN_WIDTH - metrics1.stringWidth("Score: " + p1.appleEaten))/2, g.getFont().getSize());
 
         // Game over text
         g.setColor(Color.RED);
@@ -168,40 +195,18 @@ public class GamePanel extends JPanel implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if (running){
-            move();
-            checkApple();
-            checkCollisions();
+            p1.move();
+            p1.checkApple(apple);
+            this.running = p1.checkPoison(poison);
+            this.running = p1.checkObstacle(wall);
+            running = p1.checkCollisions();
+            //Returns a false value but isn't stopping the program
+            System.out.println(p1.checkPoison(poison));
         }
         repaint();
     }
 
-    public class MyKeyAdapter extends KeyAdapter{
-        @Override
-        public void keyPressed(KeyEvent e){
-            switch (e.getKeyCode()){
-                case KeyEvent.VK_LEFT:
-                    if(direction != 'R'){
-                        direction = 'L';
-                    }
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    if(direction != 'L'){
-                        direction = 'R';
-                    }
-                    break;
-                case KeyEvent.VK_UP:
-                    if(direction != 'D'){
-                        direction = 'U';
-                    }
-                    break;
-                case KeyEvent.VK_DOWN:
-                    if(direction != 'U'){
-                        direction = 'D';
-                    }
-                    break;
-            }
-        }
-    }
+
 
 
 }
