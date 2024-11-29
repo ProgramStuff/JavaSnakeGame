@@ -26,9 +26,6 @@ public class GamePanel extends JPanel implements ActionListener{
     static final int DELAY = 75;
     final int x[] = new int[GAME_UNITS];
     final int y[] = new int[GAME_UNITS];
-    int bodyParts = 6;
-    int appleEaten = 0;
-    char direction = 'R';
     boolean running = false;
     Timer timer;
     Random random;
@@ -41,7 +38,11 @@ public class GamePanel extends JPanel implements ActionListener{
     Obstacle wall = new Obstacle(Color.GRAY);
 
     // Player
-    Player p1 = new Player();
+    Player p1 = new Player(1);
+    Player p2 = new Player(2);
+    boolean player1Alive = true;
+    boolean player2Alive = true;
+
 
 
 
@@ -51,6 +52,7 @@ public class GamePanel extends JPanel implements ActionListener{
         this.setBackground(Color.black);
         this.setFocusable(true);
         this.addKeyListener(p1.playerKeys);
+        this.addKeyListener(p2.playerKeys);
         startGame();
     }
 
@@ -89,6 +91,16 @@ public class GamePanel extends JPanel implements ActionListener{
             g.setColor(wall.getColor());
             g.fillRect(wall.getObstacleX(), wall.getObstacleY(), UNIT_SIZE, UNIT_SIZE);
 
+            // Display player scores
+            g.setColor(Color.RED);
+            g.setFont(new Font("Ink Free", Font.BOLD, 20));
+            g.drawString("Player 1 Score: " + p1.appleEaten, 10, g.getFont().getSize());
+
+            g.setColor(Color.RED);
+            g.setFont(new Font("Ink Free", Font.BOLD, 20));
+            g.drawString("Player 2 Score: " + p2.appleEaten, 430, g.getFont().getSize());
+
+            // Create the snakes body parts
             for (int i = 0; i < p1.bodyParts; i++) {
                 if (i == 0) {
                     g.setColor(Color.GRAY);
@@ -97,10 +109,16 @@ public class GamePanel extends JPanel implements ActionListener{
                     g.setColor(new Color(45, 180, 0));
                     g.fillRect(p1.x[i], p1.y[i], UNIT_SIZE, UNIT_SIZE);
                 }
-                g.setColor(Color.RED);
-                g.setFont(new Font("Ink Free", Font.BOLD, 40));
-                FontMetrics metrics = getFontMetrics(g.getFont());
-                g.drawString("Score: " + p1.appleEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " + p1.appleEaten))/2, g.getFont().getSize());
+            }
+            for (int i = 0; i < p2.bodyParts; i++) {
+                if (i == 0) {
+                    g.setColor(Color.GRAY);
+                    g.fillRect(p2.x[i], p2.y[i], UNIT_SIZE, UNIT_SIZE);
+                } else {
+                    g.setColor(new Color(37, 171, 222));
+                    g.fillRect(p2.x[i], p2.y[i], UNIT_SIZE, UNIT_SIZE);
+                }
+
             }
         }else{
             gameOver(g);
@@ -108,82 +126,14 @@ public class GamePanel extends JPanel implements ActionListener{
 
     }
 
-
-//    public void move(){
-//        for(int i = bodyParts; i > 0; i--){
-//            x[i] = x[i-1];
-//            y[i] = y[i-1];
-//        }
-//
-//        switch (direction){
-//            case 'U':
-//                y[0] = y[0] - UNIT_SIZE;
-//                break;
-//            case 'D':
-//                y[0] = y[0] + UNIT_SIZE;
-//                break;
-//            case 'L':
-//                x[0] = x[0] - UNIT_SIZE;
-//                break;
-//            case 'R':
-//                x[0] = x[0] + UNIT_SIZE;
-//                break;
-//        }
-//    }
-//
-//    public void checkApple(){
-//        if((x[0] == apple.getFoodX()) && (y[0] == apple.getFoodY())){
-//            bodyParts++;
-//            appleEaten++;
-//            apple.newFood();
-//        }
-//    }
-//
-//    public void checkPoison(){
-//        if((x[0] == poison.getFoodX()) && (y[0] == poison.getFoodY())){
-//            running = false;
-//        }
-//    }
-//
-//    public void checkObstacle(){
-//        if((x[0] == wall.getObstacleX()) && (y[0] == wall.getObstacleY())){
-//            running = false;
-//        }
-//    }
-
-//    public void checkCollisions(){
-//        // Check body collision
-//        for (int i = bodyParts; i > 0; i--){
-//            if((x[0] == x[i]) && (y[0] == y[i])){
-//                running = false;
-//            }
-//        }
-//        //Check left wall
-//        if(x[0] < 0){
-//            running = false;
-//        }
-//        //Check right wall
-//        if(x[0] > SCREEN_WIDTH){
-//            running = false;
-//        }
-//        //Check top wall
-//        if(y[0] < 0){
-//            running = false;
-//        }
-//        //Check bottom wall
-//        if(y[0] > SCREEN_HEIGHT){
-//            running = false;
-//        }
-//        if(!running){
-//            timer.stop();
-//        }
-//    }
-
     public void gameOver(Graphics g){
         g.setColor(Color.RED);
-        g.setFont(new Font("Ink Free", Font.BOLD, 40));
-        FontMetrics metrics1 = getFontMetrics(g.getFont());
-        g.drawString("Score: " + p1.appleEaten, (SCREEN_WIDTH - metrics1.stringWidth("Score: " + p1.appleEaten))/2, g.getFont().getSize());
+        g.setFont(new Font("Ink Free", Font.BOLD, 30));
+        // Display both players score after game
+        g.drawString("Player 1 Score: " + p1.appleEaten, 10, g.getFont().getSize());
+
+        g.drawString("Player 2 Score: " + p2.appleEaten, 330, g.getFont().getSize());
+
 
         // Game over text
         g.setColor(Color.RED);
@@ -194,15 +144,30 @@ public class GamePanel extends JPanel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (running){
+        if (this.running){
+            // If players lose set player alive to false and set the snake body size to 0
             p1.move();
             p1.checkApple(apple);
-            this.running = p1.checkPoison(poison);
-            this.running = p1.checkObstacle(wall);
-            running = p1.checkCollisions();
-            //Returns a false value but isn't stopping the program
-            System.out.println(p1.checkPoison(poison));
+            player1Alive = p1.checkPoison(poison) && p1.checkObstacle(wall) && p1.checkCollisions();
+            if (!player1Alive){
+                p1.bodyParts = 0;
+            }
+
+            p2.move();
+            p2.checkApple(apple);
+            player2Alive = p2.checkPoison(poison) && p2.checkObstacle(wall) && p2.checkCollisions();
+            if (!player2Alive){
+                p2.bodyParts = 0;
+            }
+
+            // Stop the game if both players lose
+            running = player1Alive || player2Alive;
+
+            if(!this.running){
+                timer.stop();
+            }
         }
+
         repaint();
     }
 

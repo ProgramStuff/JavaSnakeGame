@@ -13,8 +13,6 @@ import static org.example.GamePanel.*;
  * Purpose:
  */
 
-// The head of the snake is not staying on the body and the poison and wall are not being detected
-    // The snake hits the left wall but not the bottom??
 public class Player {
 
     int bodyParts = 6;
@@ -22,9 +20,15 @@ public class Player {
     final int y[] = new int[GAME_UNITS];
     char direction = 'R';
     int appleEaten = 0;
+    int currentPlayer;
     MyKeyAdapter playerKeys = new MyKeyAdapter();
 
+    // Constructor to allow creation of multiple players
+    public Player(int player) {
+        this.currentPlayer = player;
+    }
 
+    // Move snake
     public void move(){
         for(int i = bodyParts; i > 0; i--){
             x[i] = x[i-1];
@@ -56,17 +60,12 @@ public class Player {
     }
 
     public Boolean checkPoison(PoisonFood poison){
-        if((x[0] == poison.getFoodX()) && (y[0] == poison.getFoodY())){
-            return false;
-        }
-        return true;
+        return (x[0] != poison.getFoodX()) || (y[0] != poison.getFoodY());
+
     }
 
     public Boolean checkObstacle(Obstacle wall){
-        if((x[0] == wall.getObstacleX()) && (y[0] == wall.getObstacleY())){
-            return false;
-        }
-        return true;
+            return (x[0] != wall.getObstacleX()) || (y[0] != wall.getObstacleY());
     }
 
     public Boolean checkCollisions(){
@@ -92,36 +91,60 @@ public class Player {
         if(y[0] > SCREEN_HEIGHT - 25){
             return false;
         }
-//        if(!running){
-//            timer.stop();
-//        }
+
         return true;
     }
 
+    // Set the key pressed events for each player
     public class MyKeyAdapter extends KeyAdapter{
         @Override
         public void keyPressed(KeyEvent e){
-            switch (e.getKeyCode()){
-                case KeyEvent.VK_LEFT:
-                    if(direction != 'R'){
-                        direction = 'L';
-                    }
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    if(direction != 'L'){
-                        direction = 'R';
-                    }
-                    break;
-                case KeyEvent.VK_UP:
-                    if(direction != 'D'){
-                        direction = 'U';
-                    }
-                    break;
-                case KeyEvent.VK_DOWN:
-                    if(direction != 'U'){
-                        direction = 'D';
-                    }
-                    break;
+            if (currentPlayer == 1) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_LEFT:
+                        if (direction != 'R') {
+                            direction = 'L';
+                        }
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        if (direction != 'L') {
+                            direction = 'R';
+                        }
+                        break;
+                    case KeyEvent.VK_UP:
+                        if (direction != 'D') {
+                            direction = 'U';
+                        }
+                        break;
+                    case KeyEvent.VK_DOWN:
+                        if (direction != 'U') {
+                            direction = 'D';
+                        }
+                        break;
+                }
+            }else if (currentPlayer == 2){
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_A:
+                        if (direction != 'R') {
+                            direction = 'L';
+                        }
+                        break;
+                    case KeyEvent.VK_D:
+                        if (direction != 'L') {
+                            direction = 'R';
+                        }
+                        break;
+                    case KeyEvent.VK_W:
+                        if (direction != 'D') {
+                            direction = 'U';
+                        }
+                        break;
+                    case KeyEvent.VK_S:
+                        if (direction != 'U') {
+                            direction = 'D';
+                        }
+                        break;
+                }
             }
         }
     }
