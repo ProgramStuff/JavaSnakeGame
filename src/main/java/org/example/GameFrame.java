@@ -3,14 +3,23 @@ package org.example;
 import javax.swing.*;
 import java.awt.*;
 
-/**
+/*
  * Title:
  * Filename: GameFrame
  * Author: Jordan Kelsey
  * Date: 2024-11-12
  * Purpose:
  */
+
+
+/**
+ * Extends JFrame
+ * Hold the game panel and all of its components
+ */
 public class GameFrame extends JFrame {
+    /**
+     * GameFrame constructor
+     */
     public GameFrame() {
         GamePanel gamePanel = new GamePanel();
         this.add(gamePanel);

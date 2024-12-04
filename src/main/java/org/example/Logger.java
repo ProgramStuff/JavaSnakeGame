@@ -6,21 +6,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-/**
+/*
  * Title:
  * Filename: Logger
  * Author: Jordan Kelsey
  * Date: 2024-11-30
  * Purpose:
  */
+
+
+/**
+ * Logger class to reade and write data to a text file
+ */
 public class Logger {
     private static Logger _instance;
-//    private List<int> scores;
     private PrintWriter fileWriter;
     private String highScores;
 
+    /**
+     * Logger constructor
+     * Creates a text file or opens a text file
+     */
     public Logger(){
-//        scores = new ArrayList<int>();
         try {
             fileWriter = new PrintWriter(new FileWriter("highScores.txt", true));
         }catch (IOException e){
@@ -28,18 +35,12 @@ public class Logger {
         }
     }
 
-//    *** Singleton instance retrieval
 
-    public static Logger getInstance(){
-        if (_instance == null){
-            synchronized (Logger.class){
-                if (_instance == null){
-                    _instance = new Logger();
-                }
-            }
-        }
-        return _instance;
-    }
+    /**
+     * @param highScore for the new high score
+     *
+     * writes the high score to the text file
+     */
     public void setHighScore(int highScore){
         try {
             FileWriter fileWriter1 = new FileWriter("highScores.txt");
@@ -51,6 +52,10 @@ public class Logger {
         }
     }
 
+
+    /**
+     * @return highScore stored within the text file
+     */
     public String getHighScore(){
 
         try {
