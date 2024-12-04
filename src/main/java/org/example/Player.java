@@ -16,8 +16,8 @@ import static org.example.GamePanel.*;
 public class Player {
 
     int bodyParts = 6;
-    final int x[] = new int[GAME_UNITS];
-    final int y[] = new int[GAME_UNITS];
+    int x[] = new int[GAME_UNITS];
+    int y[] = new int[GAME_UNITS];
     char direction = 'R';
     int appleEaten = 0;
     int currentPlayer;
@@ -93,6 +93,28 @@ public class Player {
         }
 
         return true;
+    }
+
+    public void resetPlayer(){
+        // Reset player when game is started to play again
+        appleEaten = 0;
+        bodyParts = 6;
+        direction = 'R';
+        x = new int[GAME_UNITS];
+        y = new int[GAME_UNITS];
+        playerKeys = new MyKeyAdapter();
+
+    }
+
+    // Overloading reset player function to persist apple count and level change
+    public void resetPlayer(int AppleEaten){
+        // Reset player when game is started to play again
+        bodyParts = 6;
+        direction = 'R';
+        x = new int[GAME_UNITS];
+        y = new int[GAME_UNITS];
+        playerKeys = new MyKeyAdapter();
+
     }
 
     // Set the key pressed events for each player

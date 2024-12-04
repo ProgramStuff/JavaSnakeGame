@@ -13,4 +13,5 @@ public class PoisonFood extends Food{
     public PoisonFood(Color color) {
         super(color);
     }
+
 }

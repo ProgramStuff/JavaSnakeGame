@@ -20,7 +20,5 @@ public class GameFrame extends JFrame {
         this.pack();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
-
-        // Create instance of food class, return food eaten status to snake and update body parts
     }
 }
